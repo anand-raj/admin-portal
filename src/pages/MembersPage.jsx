@@ -27,6 +27,7 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [stateFilter, setStateFilter] = useState('');
   const [busy, setBusy] = useState({});
 
   const load = useCallback(async () => {
@@ -55,8 +56,15 @@ export default function MembersPage() {
     }
   }
 
+  const uniqueStates = [...new Set(members.map(m => m.state).filter(Boolean))].sort();
+
   const filtered = members
-    .filter(m => filter === 'all' || m.status === filter)
+    .filter(m => {
+      if (filter === 'expired') return isExpired(m.expires_at);
+      if (filter !== 'all') return m.status === filter;
+      return true;
+    })
+    .filter(m => !stateFilter || m.state === stateFilter)
     .filter(m => !search || m.name.toLowerCase().includes(search) || m.email.toLowerCase().includes(search));
 
   const counts = {
@@ -67,7 +75,13 @@ export default function MembersPage() {
     expired: members.filter(m => isExpired(m.expires_at)).length,
   };
 
-  const FILTERS = ['all', 'pending', 'approved', 'rejected'];
+  const STAT_CARDS = [
+    { label: 'Total',    key: 'all',      value: counts.total },
+    { label: 'Pending',  key: 'pending',  value: counts.pending,  cls: 'text-amber-600' },
+    { label: 'Approved', key: 'approved', value: counts.approved, cls: 'text-green-700' },
+    { label: 'Rejected', key: 'rejected', value: counts.rejected, cls: 'text-red-600' },
+    { label: 'Expired',  key: 'expired',  value: counts.expired,  cls: 'text-red-500' },
+  ];
 
   return (
     <div className="p-6 space-y-4">
@@ -76,37 +90,36 @@ export default function MembersPage() {
         <Button variant="outline" size="sm" onClick={load}>↻ Refresh</Button>
       </div>
 
-      {/* Stats */}
+      {/* Stats — click to filter */}
       <div className="flex gap-3 flex-wrap">
-        {[
-          { label: 'Total', value: counts.total },
-          { label: 'Pending', value: counts.pending, cls: 'text-amber-600' },
-          { label: 'Approved', value: counts.approved, cls: 'text-green-700' },
-          { label: 'Rejected', value: counts.rejected, cls: 'text-red-600' },
-          { label: 'Expired', value: counts.expired, cls: 'text-red-500' },
-        ].map(({ label, value, cls }) => (
-          <div key={label} className="bg-white rounded-lg border px-4 py-2 text-center min-w-20">
-            <div className={`text-2xl font-bold ${cls ?? ''}`}>{value}</div>
-            <div className="text-xs text-muted-foreground">{label}</div>
-          </div>
+        {STAT_CARDS.map(({ label, key, value, cls }) => (
+          <button
+            key={key}
+            onClick={() => setFilter(key)}
+            className={`rounded-lg border px-4 py-2 text-center min-w-20 transition-colors cursor-pointer
+              ${ filter === key
+                ? 'bg-slate-900 border-slate-900 text-white'
+                : 'bg-white hover:bg-slate-50'
+              }`}
+          >
+            <div className={`text-2xl font-bold ${filter === key ? '' : (cls ?? '')}`}>{value}</div>
+            <div className={`text-xs ${filter === key ? 'text-slate-300' : 'text-muted-foreground'}`}>{label}</div>
+          </button>
         ))}
       </div>
 
       {/* Toolbar */}
       <div className="flex gap-2 flex-wrap items-center">
-        <div className="flex gap-1">
-          {FILTERS.map(f => (
-            <Button
-              key={f}
-              variant={filter === f ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter(f)}
-              className="capitalize"
-            >
-              {f}
-            </Button>
+        <select
+          value={stateFilter}
+          onChange={e => setStateFilter(e.target.value)}
+          className="h-9 rounded-md border border-input bg-white px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        >
+          <option value="">All states</option>
+          {uniqueStates.map(s => (
+            <option key={s} value={s}>{s}</option>
           ))}
-        </div>
+        </select>
         <Input
           placeholder="Search name or email…"
           className="max-w-xs"
