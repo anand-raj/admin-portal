@@ -1,4 +1,4 @@
-import { OAUTH_URL, WORKER_URL } from '../lib/config';
+import { OAUTH_URL, OAUTH_SITE_ID, WORKER_URL } from '../lib/config';
 import { useAuth } from '../lib/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     const popup = window.open(
-      `${OAUTH_URL}/auth?provider=github&site_id=${encodeURIComponent(location.hostname)}`,
+      `${OAUTH_URL}/auth?provider=github&site_id=${encodeURIComponent(OAUTH_SITE_ID)}`,
       'github-oauth',
       `width=600,height=700,left=${Math.round((screen.width - 600) / 2)},top=${Math.round((screen.height - 700) / 2)}`
     );
