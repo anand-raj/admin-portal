@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../lib/auth';
 import { getAdmins, addAdmin, removeAdmin } from '../lib/api';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ export default function AdminsPage() {
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState({});
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setAdmins(await getAdmins(token));
@@ -37,9 +37,9 @@ export default function AdminsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   async function handleAdd() {
     if (!form.github_login.trim()) { toast.error('GitHub login is required.'); return; }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../lib/auth';
 import { getMembers, approveMember, rejectMember, renewMember } from '../lib/api';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +29,7 @@ export default function MembersPage() {
   const [filter, setFilter] = useState('all');
   const [busy, setBusy] = useState({});
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setMembers(await getMembers(token));
@@ -38,9 +38,9 @@ export default function MembersPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   async function act(id, fn, label) {
     setBusy(b => ({ ...b, [id]: true }));

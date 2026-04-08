@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../lib/auth';
 import { getBooks, createBook, updateBook } from '../lib/api';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ export default function BooksPage() {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setBooks(await getBooks(token));
@@ -28,9 +28,9 @@ export default function BooksPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   function openNew() {
     setEditing(null);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../lib/auth';
 import { getOrders } from '../lib/api';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,7 @@ export default function OrdersPage() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setOrders(await getOrders(token));
@@ -32,9 +32,9 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const filtered = orders
     .filter(o => filter === 'all' || o.status === filter)

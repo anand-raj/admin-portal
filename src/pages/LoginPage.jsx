@@ -54,7 +54,7 @@ export default function LoginPage() {
 
       window.removeEventListener('message', handleMessage);
       clearInterval(pollClosed);
-      try { popup.close(); } catch {}
+      try { popup.close(); } catch { /* ignore */ }
 
       let ghToken;
       try {
