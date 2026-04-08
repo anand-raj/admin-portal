@@ -43,6 +43,14 @@ export async function renewMember(token, id) {
   return handleResponse(res);
 }
 
+export async function sendReminders(token) {
+  const res = await fetch(`${WORKER_URL}/admin/remind`, {
+    method: 'POST',
+    headers: authHeaders(token),
+  });
+  return handleResponse(res);
+}
+
 // ── Newsletter ─────────────────────────────────────────────────────────────
 export async function sendNewsletter(token, { subject, html }) {
   const res = await fetch(`${WORKER_URL}/newsletter`, {

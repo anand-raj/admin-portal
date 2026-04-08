@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../lib/auth';
-import { getMembers, approveMember, rejectMember, renewMember } from '../lib/api';
+import { getMembers, approveMember, rejectMember, renewMember, sendReminders } from '../lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +29,20 @@ export default function MembersPage() {
   const [filter, setFilter] = useState('all');
   const [stateFilter, setStateFilter] = useState('');
   const [busy, setBusy] = useState({});
+  const [reminding, setReminding] = useState(false);
+
+  async function remind() {
+    setReminding(true);
+    try {
+      const { sent, skipped } = await sendReminders(token);
+      if (sent === 0) toast.info(`No reminders due. ${skipped} member(s) not yet eligible.`);
+      else toast.success(`${sent} reminder email${sent === 1 ? '' : 's'} sent.`);
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setReminding(false);
+    }
+  }
 
   const load = useCallback(async () => {
     try {
@@ -87,7 +101,12 @@ export default function MembersPage() {
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Members</h1>
-        <Button variant="outline" size="sm" onClick={load}>↻ Refresh</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={remind} disabled={reminding}>
+            {reminding ? 'Sending…' : '✉ Send Reminders'}
+          </Button>
+          <Button variant="outline" size="sm" onClick={load}>↻ Refresh</Button>
+        </div>
       </div>
 
       {/* Stats — click to filter */}
