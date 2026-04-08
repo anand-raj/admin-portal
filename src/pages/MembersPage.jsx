@@ -124,6 +124,9 @@ export default function MembersPage() {
               <TableHead>Email</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Submitted</TableHead>
+              <TableHead>Occupation</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead>Approved</TableHead>
               <TableHead>Expires</TableHead>
               <TableHead>Actions</TableHead>
@@ -131,10 +134,10 @@ export default function MembersPage() {
           </TableHeader>
           <TableBody>
             {loading && (
-              <TableRow><TableCell colSpan={7} className="text-center py-10 text-muted-foreground">Loading…</TableCell></TableRow>
+              <TableRow><TableCell colSpan={10} className="text-center py-10 text-muted-foreground">Loading…</TableCell></TableRow>
             )}
             {!loading && !filtered.length && (
-              <TableRow><TableCell colSpan={7} className="text-center py-10 text-muted-foreground">No members found.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={10} className="text-center py-10 text-muted-foreground">No members found.</TableCell></TableRow>
             )}
             {filtered.map(m => {
               const expired = isExpired(m.expires_at);
@@ -149,6 +152,13 @@ export default function MembersPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">{fmtDate(m.created_at)}</TableCell>
+                  <TableCell className="text-sm">{m.occupation || '—'}</TableCell>
+                  <TableCell className="text-sm">
+                    {m.city || m.state || m.pincode
+                      ? <>{m.city}{m.city && m.state ? ', ' : ''}{m.state}{m.pincode ? <span className="text-muted-foreground"> {m.pincode}</span> : ''}</>
+                      : '—'}
+                  </TableCell>
+                  <TableCell className="text-sm">{m.phone || '—'}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{fmtDate(m.approved_at)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{fmtDate(m.expires_at)}</TableCell>
                   <TableCell>
