@@ -5,15 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Toaster } from '@/components/ui/sonner';
 import {
-  Users, BookOpen, ShoppingCart, Mail, Shield, LayoutDashboard,
+  Users, BookOpen, ShoppingCart, Mail, Shield, LayoutDashboard, CalendarCheck,
 } from 'lucide-react';
 
 const NAV = [
-  { to: '/members',    label: 'Members',    icon: Users },
-  { to: '/orders',     label: 'Orders',     icon: ShoppingCart },
-  { to: '/books',      label: 'Books',      icon: BookOpen },
-  { to: '/newsletter', label: 'Newsletter', icon: Mail },
-  { to: '/admins',     label: 'Admins',     icon: Shield },
+  { to: '/members',              label: 'Members',       icon: Users },
+  { to: '/orders',               label: 'Orders',        icon: ShoppingCart },
+  { to: '/books',                label: 'Books',         icon: BookOpen },
+  { to: '/newsletter',           label: 'Newsletter',    icon: Mail },
+  { to: '/event-registrations',  label: 'Registrations', icon: CalendarCheck },
+  { to: '/admins',               label: 'Admins',        icon: Shield },
 ];
 
 export default function Layout() {

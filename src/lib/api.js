@@ -1,4 +1,4 @@
-import { WORKER_URL, BOOKS_WORKER_URL } from './config';
+import { WORKER_URL, BOOKS_WORKER_URL, EVENTS_WORKER_URL } from './config';
 
 function authHeaders(token) {
   return { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' };
@@ -110,6 +110,38 @@ export async function removeAdmin(token, id) {
   const res = await fetch(`${WORKER_URL}/admin/admins/${id}`, {
     method: 'DELETE',
     headers: authHeaders(token),
+  });
+  return handleResponse(res);
+}
+
+// ── Event Registrations ────────────────────────────────────────────────────
+export async function getEventSummaries(token) {
+  const res = await fetch(`${EVENTS_WORKER_URL}/admin/events`, { headers: authHeaders(token) });
+  return handleResponse(res);
+}
+
+export async function getEventRegistrations(token, eventSlug) {
+  const url = eventSlug
+    ? `${EVENTS_WORKER_URL}/admin/registrations?event=${encodeURIComponent(eventSlug)}`
+    : `${EVENTS_WORKER_URL}/admin/registrations`;
+  const res = await fetch(url, { headers: authHeaders(token) });
+  return handleResponse(res);
+}
+
+export async function confirmRegistration(token, id) {
+  const res = await fetch(`${EVENTS_WORKER_URL}/admin/confirm`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ id }),
+  });
+  return handleResponse(res);
+}
+
+export async function cancelRegistration(token, id) {
+  const res = await fetch(`${EVENTS_WORKER_URL}/admin/cancel`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ id }),
   });
   return handleResponse(res);
 }
